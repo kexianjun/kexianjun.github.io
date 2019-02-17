@@ -343,9 +343,16 @@
       
         
           
-            <p><a href="https://github.com/kexianjun/blog/blob/master/img/DispatcherServlet.png?raw=true" target="_blank" rel="noopener">img</a></p>
+          img
 
           
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/02/16/test/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -485,12 +492,19 @@
       
         
           
-            <h2 id="编程"><a href="#编程" class="headerlink" title="编程"></a>编程</h2><ul>
-<li>java 并发编程原理</li>
-<li>Dubbo 原理详解</li>
-</ul>
+          编程
+java 并发编程原理
+Dubbo 原理详解
+
 
           
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/02/16/test-my-site/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -608,17 +622,15 @@
       
         
           
-            <p>Welcome to <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/" target="_blank" rel="noopener">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html" target="_blank" rel="noopener">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="noopener">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">"My New Post"</span></span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/writing.html" target="_blank" rel="noopener">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/server.html" target="_blank" rel="noopener">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/generating.html" target="_blank" rel="noopener">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/deployment.html" target="_blank" rel="noopener">Deployment</a></p>
-
-          
+          Welcome to Hexo! This is your very first post. Check documentation for more info. If you get any problems when using Hexo, you can find the answer in 
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/02/16/hello-world/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -758,55 +770,16 @@
       
         
           
-            <h2 id="AbstractQueuedSynchronizer"><a href="#AbstractQueuedSynchronizer" class="headerlink" title="AbstractQueuedSynchronizer"></a>AbstractQueuedSynchronizer</h2><ul>
-<li>AbstractQueuedSynchronizer 类继承自 AbstractOwnableSynchronizer，AbstractOwnableSynchronizer 主要维护了 exclusiveOwnerThread (独占模式的线程)</li>
-<li>AbstractQueuedSynchronizer 为实现依赖 FIFO 等待队列的阻塞锁和相关的同步器提供一个框架.该类被设计为依赖单个原子int值表示状态的大多数同步器的一个有用的基础.子类必须定义改变该状态的受保护方法，以及这些方法定义了该状态在获取或释放该对象方面的含义.</li>
-<li>使用这个类作为同步器的基础，实现如下方法，使用 getState、setState 或compareAndSetState 方式适当的获取或修改同步状态.<ul>
-<li>tryAcquire</li>
-<li>tryRelease</li>
-<li>tryAcquireShared</li>
-<li>tryReleaseShared</li>
-<li>isHeldExclusively</li>
-</ul>
-</li>
-<li><p>AbstractQueuedSynchronizer.Node 等待队列节点类</p>
-<ul>
-<li>等待队列是 CLH 锁队列的一个变种</li>
-<li>Node 类的属性如下：<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Node</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 表示节点在共享模式下等待</span></span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">final</span> Node SHARED = <span class="keyword">new</span> Node();</span><br><span class="line">    <span class="comment">// 表示节点在独占模式下等待</span></span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">final</span> Node EXCLUSIVE = <span class="keyword">null</span>;</span><br><span class="line">    <span class="comment">// 表示线程已取消的 waitStatus 值</span></span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> CANCELLED =  <span class="number">1</span>;</span><br><span class="line">    <span class="comment">// 表示后继线程需要 unparking 的 waitStatus 值</span></span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> SIGNAL    = -<span class="number">1</span>;</span><br><span class="line">    <span class="comment">// 表示线程在条件等待的 waitStatus 值</span></span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> CONDITION = -<span class="number">2</span>;</span><br><span class="line">    <span class="comment">// 指示下一个 acquireShared的waitStatus 值应该无条件传播</span></span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> PROPAGATE = -<span class="number">3</span>;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">    * 状态指定，取如下值：</span></span><br><span class="line"><span class="comment">    *     SIGNAL:     当前节点的后继节点被阻塞(通过park)，所以当</span></span><br><span class="line"><span class="comment">    *                 前节点释放或取消的时候需要unpark后继节点</span></span><br><span class="line"><span class="comment">    *     CANCELLED:  当前节点由于超时或中断被取消</span></span><br><span class="line"><span class="comment">    *     CONDITION:  当前节点在条件队列中</span></span><br><span class="line"><span class="comment">    *     PROPAGATE:  releaseShared 操作需要传播给其他节点</span></span><br><span class="line"><span class="comment">    *     0:          以上都不是</span></span><br><span class="line"><span class="comment">    * 值以数字的方式排列是为了简化使用.</span></span><br><span class="line"><span class="comment">    * 对于普通的同步节点，该字段的初始值为0，condition 节点初始值</span></span><br><span class="line"><span class="comment">    * 为 CONDITION</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">    <span class="keyword">volatile</span> <span class="keyword">int</span> waitStatus;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">volatile</span> Node prev;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">volatile</span> Node next;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">volatile</span> Thread thread;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">    * 指向下一个条件等待的节点或特定值 SHARED. 因为条件队列仅出在</span></span><br><span class="line"><span class="comment">    * 独占模式，当节点处于条件等待时，我们仅需要一个简单的链表保存</span></span><br><span class="line"><span class="comment">    * 节点. 随后它们会被转移到 re-acquire 队列中. 因为条件等待必</span></span><br><span class="line"><span class="comment">    * 须是独占的，所以使用这个字段表示共享模式(见 isShared() 的判</span></span><br><span class="line"><span class="comment">    * 断逻辑).</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">    Node nextWaiter;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-</li>
-<li><p>AbstractQueuedSynchronizer的主要属性如下：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">* 等待队列的头结点，延迟初始化. 除了初始化，其更新操作都通过setHead方法.</span></span><br><span class="line"><span class="comment">* 如果头结点存在，其状态保证不是 CANCELLED</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">transient</span> <span class="keyword">volatile</span> Node head;</span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">* 等待队列的尾节点. 只有在添加新节点时通过 enq 进行更新</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">transient</span> <span class="keyword">volatile</span> Node tail;</span><br><span class="line"><span class="comment">// 同步状态</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">volatile</span> <span class="keyword">int</span> state;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>CLH队列的入队操作</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> Node <span class="title">enq</span><span class="params">(<span class="keyword">final</span> Node node)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">for</span> (;;) &#123;</span><br><span class="line">        Node t = tail;</span><br><span class="line">        <span class="keyword">if</span> (t == <span class="keyword">null</span>) &#123; <span class="comment">// 尾节点为空，则表示队列为空，先初始化头结点</span></span><br><span class="line">            <span class="keyword">if</span> (compareAndSetHead(<span class="keyword">new</span> Node()))</span><br><span class="line">                tail = head;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            node.prev = t;</span><br><span class="line">            <span class="keyword">if</span> (compareAndSetTail(t, node)) &#123;</span><br><span class="line">                t.next = node;</span><br><span class="line">                <span class="keyword">return</span> t;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>为当前线程创建节点并插入等待队列</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> Node <span class="title">addWaiter</span><span class="params">(Node mode)</span> </span>&#123;</span><br><span class="line">    Node node = <span class="keyword">new</span> Node(Thread.currentThread(), mode);</span><br><span class="line">    <span class="comment">// 尝试最快的方式入队，失败以后在执行完整的入队操作</span></span><br><span class="line">    Node pred = tail;</span><br><span class="line">    <span class="keyword">if</span> (pred != <span class="keyword">null</span>) &#123;</span><br><span class="line">        node.prev = pred;</span><br><span class="line">        <span class="keyword">if</span> (compareAndSetTail(pred, node)) &#123;</span><br><span class="line">            pred.next = node;</span><br><span class="line">            <span class="keyword">return</span> node;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    enq(node);</span><br><span class="line">    <span class="keyword">return</span> node;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>private void unparkSuccessor(Node node) 唤醒后继节点，找到当前节点后继节点中第一个状态不为取消状态的节点进行唤醒</p>
-</li>
-<li>private void doReleaseShared() 共享模式的释放操作</li>
-<li>private void cancelAcquire(Node node) 取消正在进行的获取尝试</li>
-<li><p>private static boolean shouldParkAfterFailedAcquire(Node pred, Node node) 检查和更新未能获取的节点的状态. </p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">boolean</span> <span class="title">shouldParkAfterFailedAcquire</span><span class="params">(Node pred, Node node)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> ws = pred.waitStatus;</span><br><span class="line">    <span class="keyword">if</span> (ws == Node.SIGNAL)</span><br><span class="line">        <span class="comment">/*</span></span><br><span class="line"><span class="comment">         * 当前节点已经设置状态，请求当前驱节点释放的时候通知它，因此可以安全的</span></span><br><span class="line"><span class="comment">         * park当前节点</span></span><br><span class="line"><span class="comment">        */</span></span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">    <span class="keyword">if</span> (ws &gt; <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="comment">/*</span></span><br><span class="line"><span class="comment">         * 前驱节点被取消了，跳过所有被取消的前驱节点</span></span><br><span class="line"><span class="comment">         */</span></span><br><span class="line">        <span class="keyword">do</span> &#123;</span><br><span class="line">            node.prev = pred = pred.prev;</span><br><span class="line">        &#125; <span class="keyword">while</span> (pred.waitStatus &gt; <span class="number">0</span>);</span><br><span class="line">        pred.next = node;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="comment">/*</span></span><br><span class="line"><span class="comment">         * waitStatus 必须为0或 PROPAGATE，表示我们需要通知，但是不进行</span></span><br><span class="line"><span class="comment">         * park，调用者需要进行重试，确保在park之前不会进行获取</span></span><br><span class="line"><span class="comment">         */</span></span><br><span class="line">        compareAndSetWaitStatus(pred, ws, Node.SIGNAL);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>public final void acquire(int arg) 独占式获取操作，忽略中断，首先尝试获取，获取失败后将当前节点插入到等待队列，然后在循环中自旋获取，在获取过程中如果前驱节点的状态为 SIGNAL，则park当前线程，等待被唤醒，唤醒以后重新自旋获取</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">void</span> <span class="title">acquire</span><span class="params">(<span class="keyword">int</span> arg)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (!tryAcquire(arg) &amp;&amp;</span><br><span class="line">        acquireQueued(addWaiter(Node.EXCLUSIVE), arg))</span><br><span class="line">        selfInterrupt();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>public final void acquireInterruptibly(int arg) 独占式获取，响应中断，如果在获取的过程中线程中断直接抛出InterruptedException</p>
-</li>
-<li>public final boolean tryAcquireNanos(int arg, long nanosTimeout) 超时获取，响应中断，超时失败返回</li>
-<li>public final boolean release(int arg) 独占模式的释放操作</li>
-<li>public final void acquireShared(int arg) 共享模式获取，不响应中断</li>
-<li>public final void acquireSharedInterruptibly(int arg) 共享模式获取，响应中断</li>
-<li>public final boolean tryAcquireSharedNanos(int arg, long nanosTimeout) 共享模式获取，响应中断，响应超时</li>
-<li>public final boolean releaseShared(int arg) 共享模式释放操作</li>
-<li><h2 id="TODO"><a href="#TODO" class="headerlink" title="TODO"></a>TODO</h2></li>
-</ul>
-
-          
+          AbstractQueuedSynchronizer
+AbstractQueuedSynchronizer 类继承自 AbstractOwnableSynchronizer，AbstractOwnableSynchronizer 主要维护了 exclusiveOwnerThread (独占模式的线程
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/02/16/java 并发之AQS/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
