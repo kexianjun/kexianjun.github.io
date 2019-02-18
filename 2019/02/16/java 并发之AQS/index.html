@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="柯贤俊-技术博客">
 <meta property="og:description" content="AbstractQueuedSynchronizer AbstractQueuedSynchronizer 类继承自 AbstractOwnableSynchronizer，AbstractOwnableSynchronizer 主要维护了 exclusiveOwnerThread (独占模式的线程) AbstractQueuedSynchronizer 为实现依赖 FIFO 等待队列的阻塞锁和相">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-02-17T13:28:36.297Z">
+<meta property="og:updated_time" content="2019-02-18T13:45:51.290Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="java 并发之AQS">
 <meta name="twitter:description" content="AbstractQueuedSynchronizer AbstractQueuedSynchronizer 类继承自 AbstractOwnableSynchronizer，AbstractOwnableSynchronizer 主要维护了 exclusiveOwnerThread (独占模式的线程) AbstractQueuedSynchronizer 为实现依赖 FIFO 等待队列的阻塞锁和相">
@@ -407,7 +407,27 @@
 <li>public final void acquireSharedInterruptibly(int arg) 共享模式获取，响应中断</li>
 <li>public final boolean tryAcquireSharedNanos(int arg, long nanosTimeout) 共享模式获取，响应中断，响应超时</li>
 <li>public final boolean releaseShared(int arg) 共享模式释放操作</li>
-<li><h2 id="TODO"><a href="#TODO" class="headerlink" title="TODO"></a>TODO</h2></li>
+<li><p>ConditionObject 实现的实现 ReentrantLock 的 condition 就是基于此实现的，condition 的 wait、signal 操作必须在持有锁的情况下进行</p>
+<ul>
+<li><p>condition 队列，condition 队列由以下两个应用标识头尾，并由 Node 的 nextWaiter 进行连接，condition 队列中的状态都是 Node.CONDITION</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// condition 队列的第一个节点</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">transient</span> Node firstWaiter;</span><br><span class="line"><span class="comment">// condition 队列的最后一个节点</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">transient</span> Node lastWaiter;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>public final void await() wait 操作，主要由以下步骤组成</p>
+<ul>
+<li>将当前线程添加到 condition 对于列</li>
+<li>释放当前线程持有的锁</li>
+<li>循环判断当前节点是否在同步等待队列中，如果不在同步等待队列中则执行 LockSupport.park 操作挂起当前线程</li>
+<li>当前线程被唤醒且关联的节点在同步等待队列中则执行后续操作</li>
+<li>重新去获取锁，并继续往后执行</li>
+</ul>
+</li>
+<li>public final void signal() signal 操作<ul>
+<li>执行 signal 的线程必须独占的持有锁</li>
+<li>将 condition 队列中的第一个节点移动到同步等待队列的尾部</li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 
       
@@ -583,7 +603,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#AbstractQueuedSynchronizer"><span class="nav-number">1.</span> <span class="nav-text">AbstractQueuedSynchronizer</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#TODO"><span class="nav-number">2.</span> <span class="nav-text">TODO</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#AbstractQueuedSynchronizer"><span class="nav-number">1.</span> <span class="nav-text">AbstractQueuedSynchronizer</span></a></li></ol></div>
             
 
           </div>
