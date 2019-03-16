@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="Hexo, NexT">
+  <meta name="keywords" content="java,Dubbo,微服务,">
 
 
 
@@ -79,16 +79,20 @@
 
 
 
-<meta name="description" content="柯贤俊的技术博客">
-<meta property="og:type" content="website">
-<meta property="og:title" content="柯贤俊-技术博客">
-<meta property="og:url" content="http://yoursite.com/index.html">
+<meta name="description" content="Dubbo 本地存根的实现 根据 Dubbo 官网的介绍  远程服务后，客户端通常只剩下接口，而实现全在服务器端，但提供方有些时候想在客户端也执行部分逻辑，比如：做 ThreadLocal 缓存，提前验证参数，调用失败后伪造容错数据等等，此时就需要在 API 中带上 Stub，客户端生成 Proxy 实例，会把 Proxy 通过构造函数传给 Stub，然后把 Stub 暴露给用户，Stub 可以决">
+<meta name="keywords" content="java,Dubbo,微服务">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Dubbo stub (Dubbo 本地存根)">
+<meta property="og:url" content="http://yoursite.com/2019/02/16/dubbo stub (本地存根)/index.html">
 <meta property="og:site_name" content="柯贤俊-技术博客">
-<meta property="og:description" content="柯贤俊的技术博客">
+<meta property="og:description" content="Dubbo 本地存根的实现 根据 Dubbo 官网的介绍  远程服务后，客户端通常只剩下接口，而实现全在服务器端，但提供方有些时候想在客户端也执行部分逻辑，比如：做 ThreadLocal 缓存，提前验证参数，调用失败后伪造容错数据等等，此时就需要在 API 中带上 Stub，客户端生成 Proxy 实例，会把 Proxy 通过构造函数传给 Stub，然后把 Stub 暴露给用户，Stub 可以决">
 <meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://dubbo.apache.org/docs/zh-cn/user/sources/images/stub.jpg">
+<meta property="og:updated_time" content="2019-03-16T01:59:32.370Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="柯贤俊-技术博客">
-<meta name="twitter:description" content="柯贤俊的技术博客">
+<meta name="twitter:title" content="Dubbo stub (Dubbo 本地存根)">
+<meta name="twitter:description" content="Dubbo 本地存根的实现 根据 Dubbo 官网的介绍  远程服务后，客户端通常只剩下接口，而实现全在服务器端，但提供方有些时候想在客户端也执行部分逻辑，比如：做 ThreadLocal 缓存，提前验证参数，调用失败后伪造容错数据等等，此时就需要在 API 中带上 Stub，客户端生成 Proxy 实例，会把 Proxy 通过构造函数传给 Stub，然后把 Stub 暴露给用户，Stub 可以决">
+<meta name="twitter:image" content="http://dubbo.apache.org/docs/zh-cn/user/sources/images/stub.jpg">
 
 
 
@@ -118,13 +122,13 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/">
+  <link rel="canonical" href="http://yoursite.com/2019/02/16/dubbo stub (本地存根)/">
 
 
 
 
 
-  <title>柯贤俊-技术博客</title>
+  <title>Dubbo stub (Dubbo 本地存根) | 柯贤俊-技术博客</title>
   
 
 
@@ -143,8 +147,7 @@
     
   
 
-  <div class="container sidebar-position-left 
-  page-home">
+  <div class="container sidebar-position-left page-post-detail">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -257,158 +260,9 @@
         <div class="content-wrap">
           <div id="content" class="content">
             
-  <section id="posts" class="posts-expand">
+
+  <div id="posts" class="posts-expand">
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/02/16/java 并发之AQS/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="柯贤俊">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="柯贤俊-技术博客">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/02/16/java 并发之AQS/" itemprop="url">java 并发之AQS</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-02-16T06:33:05-05:00">
-                2019-02-16
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java-并发/" itemprop="url" rel="index">
-                    <span itemprop="name">java 并发</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-          AbstractQueuedSynchronizer
-AbstractQueuedSynchronizer 类继承自 AbstractOwnableSynchronizer，AbstractOwnableSynchronizer 主要维护了 exclusiveOwnerThread (独占模式的线程
-          ...
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2019/02/16/java 并发之AQS/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
 
   
 
@@ -438,9 +292,7 @@ AbstractQueuedSynchronizer 类继承自 AbstractOwnableSynchronizer，AbstractOw
 
         
         
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/02/16/dubbo stub (本地存根)/" itemprop="url">Dubbo stub (Dubbo 本地存根)</a></h1>
+          <h1 class="post-title" itemprop="name headline">Dubbo stub (Dubbo 本地存根)</h1>
         
 
         <div class="post-meta">
@@ -512,21 +364,36 @@ AbstractQueuedSynchronizer 类继承自 AbstractOwnableSynchronizer，AbstractOw
       
 
       
-        
-          
-          Dubbo 本地存根的实现
-根据 Dubbo 官网的介绍
+        <h2 id="Dubbo-本地存根的实现"><a href="#Dubbo-本地存根的实现" class="headerlink" title="Dubbo 本地存根的实现"></a>Dubbo 本地存根的实现</h2><ul>
+<li><p>根据 Dubbo 官网的介绍</p>
+<ul>
+<li>远程服务后，客户端通常只剩下接口，而实现全在服务器端，但提供方有些时候想在客户端也执行部分逻辑，比如：做 ThreadLocal 缓存，提前验证参数，调用失败后伪造容错数据等等，此时就需要在 API 中带上 Stub，客户端生成 Proxy 实例，会把 Proxy 通过构造函数传给 Stub，然后把 Stub 暴露给用户，Stub 可以决定要不要去调 Proxy.<br><img src="http://dubbo.apache.org/docs/zh-cn/user/sources/images/stub.jpg" alt="image"></li>
+<li><p>Stub 使用</p>
+<ul>
+<li>在 spring 配置文件中按以下方式配置：<blockquote>
+<p>&lt;dubbo:reference interface=”com.foo.BarService” stub=”true” /&gt;</p>
+</blockquote>
+</li>
+</ul>
+<p>或</p>
+<blockquote>
+<p>&lt;dubbo:reference interface=”com.foo.BarService” stub=”com.foo.BarServiceStub” /&gt;</p>
+</blockquote>
+<ul>
+<li>提供 Stub 实现<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.foo;</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">BarServiceStub</span> <span class="keyword">implements</span> <span class="title">BarService</span> </span>&#123; </span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> BarService barService;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 必须提供可传入 proxy 的构造方法</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">BarServiceStub</span><span class="params">(BarService barService)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.barService = barService;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">sayHello</span><span class="params">(String name)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 此代码在客户端执行, 你可以在客户端做ThreadLocal本地缓存，或  预先验证参数是否合法，等等</span></span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> barService.sayHello(name);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            <span class="comment">// 你可以容错，可以做任何AOP拦截事项</span></span><br><span class="line">            <span class="keyword">return</span> <span class="string">"容错数据"</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>具体实现</p>
+<ul>
+<li>具体实现其实很简单，通过在服务引用的过程中生成代理类的时候嵌入 Stub 的实现</li>
+<li>通过 org.apache.dubbo.rpc.proxy.wrapper.StubProxyFactoryWrapper 代理包装类(SPI 的包装类实现了注入自适应扩展类的功能，通过类似装饰器模式切入 SPI 接口包装实现类的逻辑)来实现，调用 SPI 接口 ProxyFactory.getProxy(Invoker<t> invoker) 的时候会首先执行 org.apache.dubbo.rpc.proxy.wrapper.StubProxyFactoryWrapper#getProxy(org.apache.dubbo.rpc.Invoker<t>) 方法通过反射的方式将生成的代理类注入到 Stub 的实现中，从而达到在 consumer 端执行部分逻辑的目的.</t></t></li>
+</ul>
+</li>
+</ul>
 
-远程服务后，客户端通常只剩下接口，而实现全在服务器端，但提供方有些时候想在客户端也执行部分逻辑，比如：做 ThreadLocal 缓存，提前验证参数，调用失败后伪造容错数据等等，此时就需要在 API 中带上 Stub，客户端生成 Proxy
-          ...
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2019/02/16/dubbo stub (本地存根)/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
       
     </div>
     
@@ -541,14 +408,40 @@ AbstractQueuedSynchronizer 类继承自 AbstractOwnableSynchronizer，AbstractOw
 
     <footer class="post-footer">
       
-
+        <div class="post-tags">
+          
+            <a href="/tags/java/" rel="tag"># java</a>
+          
+            <a href="/tags/Dubbo/" rel="tag"># Dubbo</a>
+          
+            <a href="/tags/微服务/" rel="tag"># 微服务</a>
+          
+        </div>
       
 
       
+      
+      
 
       
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/02/16/java 并发之AQS/" rel="prev" title="java 并发之AQS">
+                java 并发之AQS <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
       
-        <div class="post-eof"></div>
+
+      
       
     </footer>
   </div>
@@ -558,10 +451,11 @@ AbstractQueuedSynchronizer 类继承自 AbstractOwnableSynchronizer，AbstractOw
   </article>
 
 
-    
-  </section>
 
-  
+    <div class="post-spread">
+      
+    </div>
+  </div>
 
 
           </div>
@@ -569,6 +463,10 @@ AbstractQueuedSynchronizer 类继承自 AbstractOwnableSynchronizer，AbstractOw
 
 
           
+
+  
+
+
 
         </div>
         
@@ -589,8 +487,17 @@ AbstractQueuedSynchronizer 类继承自 AbstractOwnableSynchronizer，AbstractOw
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <section class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -650,6 +557,22 @@ AbstractQueuedSynchronizer 类继承自 AbstractOwnableSynchronizer，AbstractOw
         </div>
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Dubbo-本地存根的实现"><span class="nav-number">1.</span> <span class="nav-text">Dubbo 本地存根的实现</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       
@@ -790,6 +713,10 @@ AbstractQueuedSynchronizer 类继承自 AbstractOwnableSynchronizer，AbstractOw
 
 
   
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
 
   
 
