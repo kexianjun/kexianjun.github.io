@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="中间件,消息队列,RocketMQ,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="1. 启动流程nameSrv 启动的时候首先会创建 NamesrvController，创建 NamesrvController 的时候会解析配置参数填充 NamesrvConfig，解析配置参数过程如下：  设置系统参数 rocketmq.remoting.version 解析系统启动参数，如果启动参数有 h(表示打印帮助选项)，则在控制台打印帮助选项并退出 创建 nettyServerConf">
+<meta name="keywords" content="中间件,消息队列,RocketMQ">
+<meta property="og:type" content="article">
+<meta property="og:title" content="RocketMQ namesrv 实现">
+<meta property="og:url" content="http://yoursite.com/2019/05/26/nameSer/index.html">
+<meta property="og:site_name" content="柯贤俊-技术博客">
+<meta property="og:description" content="1. 启动流程nameSrv 启动的时候首先会创建 NamesrvController，创建 NamesrvController 的时候会解析配置参数填充 NamesrvConfig，解析配置参数过程如下：  设置系统参数 rocketmq.remoting.version 解析系统启动参数，如果启动参数有 h(表示打印帮助选项)，则在控制台打印帮助选项并退出 创建 nettyServerConf">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-05-26T12:50:42.156Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="RocketMQ namesrv 实现">
+<meta name="twitter:description" content="1. 启动流程nameSrv 启动的时候首先会创建 NamesrvController，创建 NamesrvController 的时候会解析配置参数填充 NamesrvConfig，解析配置参数过程如下：  设置系统参数 rocketmq.remoting.version 解析系统启动参数，如果启动参数有 h(表示打印帮助选项)，则在控制台打印帮助选项并退出 创建 nettyServerConf">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"always","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/05/26/nameSer/">
+
+
+
+
+
+  <title>RocketMQ namesrv 实现 | 柯贤俊-技术博客</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">柯贤俊-技术博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-commonweal">
+          <a href="/404/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-heartbeat"></i> <br>
+            
+            公益404
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/05/26/nameSer/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="柯贤俊">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="柯贤俊-技术博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">RocketMQ namesrv 实现</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-05-26T07:33:05-04:00">
+                2019-05-26
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/RocketMQ/" itemprop="url" rel="index">
+                    <span itemprop="name">RocketMQ</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="1-启动流程"><a href="#1-启动流程" class="headerlink" title="1. 启动流程"></a>1. 启动流程</h3><p>nameSrv 启动的时候首先会创建 NamesrvController，创建 NamesrvController 的时候会解析配置参数填充 NamesrvConfig，解析配置参数过程如下：</p>
+<ul>
+<li>设置系统参数 rocketmq.remoting.version</li>
+<li>解析系统启动参数，如果启动参数有 h(表示打印帮助选项)，则在控制台打印帮助选项并退出</li>
+<li>创建 nettyServerConfig 实例，设置默认的监听端口为 9876</li>
+<li>解析 -c 参数，形式为 -c configFile<ul>
+<li>另外一种新式的参数配置为 configKey=configValue</li>
+</ul>
+</li>
+</ul>
+<p>NamesrvController 构造方法中创建如下实例：</p>
+<ul>
+<li>KVConfigManager 管理 KV 配置信息<ul>
+<li>KVConfigManager 核心属性如下：<ul>
+<li>HashMap&lt;String/<em> Namespace </em>/, HashMap&lt;String/<em> Key </em>/, String/<em> Value </em>/&gt;&gt; configTable namespace 维度的配置信息</li>
+<li>namesrvController 实例</li>
+</ul>
+</li>
+<li>KVConfigManager 主要方法：<ul>
+<li>load() 默认从 /namesrv/kvConfig.json 路径加载 namesrv 的配置到 configTable</li>
+<li>putKVConfig(final String namespace, final String key, final String value) 往指定的 namespace 中增加配置（存在则更新，不存在则创建）</li>
+<li>void persist() KV 配置持久化到文件（/namesrv/kvConfig.json），流程如下：<ul>
+<li>将内存中的配置存储到 kvConfig.json.tmp 文件</li>
+<li>将原来的配置文件内存存储到 kvConfig.json.bak 文件</li>
+<li>删除 kvConfig.json 文件</li>
+<li>将 kvConfig.json.tmp 重命名为 kvConfig.json</li>
+</ul>
+</li>
+<li>void deleteKVConfig(final String namespace, final String key) 删除指定的配置</li>
+<li>byte[] getKVListByNamespace(final String namespace) 获取指定的 namespace 的所有配置</li>
+<li>getKVConfig(final String namespace, final String key) 获取指定 namespace，指定 key 的配置</li>
+<li>void printAllPeriodically() 打印所有的 KV 配置</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>RouteInfoManager 管理路由信息<ul>
+<li>主要属性如下：<ul>
+<li>HashMap&lt;String/<em> topic </em>/, List<queuedata>&gt; topicQueueTable topic 消息队列路由信息，消息发送时根据消息路由表进行负债均衡</queuedata></li>
+<li>HashMap&lt;String/<em> brokerName </em>/, BrokerData&gt; brokerAddrTable 包含 broker 基础信息，包含 brokerName、所属集群名称、主备 broker 地址</li>
+<li>HashMap&lt;String/<em> clusterName </em>/, Set&lt;String/<em> brokerName </em>/&gt;&gt; clusterAddrTable broker 集群信息，存储集群中所有的 broker 名称</li>
+<li>HashMap&lt;String/<em> brokerAddr </em>/, BrokerLiveInfo&gt; brokerLiveTable broker 状态信息，broker 每次收到心跳包都会更新该信息</li>
+<li>HashMap&lt;String/<em> brokerAddr </em>/, List<string>/<em> Filter Server </em>/&gt; filterServerTable broker 上的 filterServer 列表，用于类模式的消息过滤</string></li>
+</ul>
+</li>
+</ul>
+</li>
+<li>BrokerHousekeepingService NettyRemotingServer 的事件监听器，监听 NettyRemotingServer 的如下事件：<ul>
+<li>channelActive 即 CONNECT 事件，调用 BrokerHousekeepingService#onChannelConnect 方法，空实现</li>
+<li>channelInactive 即 CLOSE 事件，调用 BrokerHousekeepingService#onChannelClose 方法，最终调用  RouteInfoManager#onChannelDestroy 方法，移除对应 broker 节点的路由信息，逻辑如下：<ul>
+<li>根据 channel 在 brokerLiveTable 查找对应的 broker 节点地址信息</li>
+<li>移除 brokerLiveTable 中对应的 broker 节点信息</li>
+<li>移除 filterServerTable 对应的broker 节点信息</li>
+<li>在 brokerAddrTable 中查找对应的 broker 节点信息，并移除</li>
+<li>如果在 brokerAddrTable 移除 broker 节点信息后对应 brokerName 下所有的节点为空，则移除对应的 broker 信息</li>
+<li>如果 broker 被移除了，则在 clusterAddrTable 移除对应的 broker 信息，如果 broker 信息移除以后对应的集群信息为空了则移除对应的集群信息</li>
+<li>如果 broker 被移除了，则在 topicQueueTable 移除对应的 broker 信息</li>
+</ul>
+</li>
+<li>userEventTriggered 处理心跳超时事件，逻辑同 channelInactive</li>
+<li>exceptionCaught 处理异常事件，逻辑同 channelInactive</li>
+</ul>
+</li>
+</ul>
+<p>NamesrvController 创建完成以后调用 NamesrvStartup#start 启动 namesrvController</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> NamesrvController <span class="title">start</span><span class="params">(<span class="keyword">final</span> NamesrvController controller)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">null</span> == controller) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"NamesrvController is null"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">boolean</span> initResult = controller.initialize();</span><br><span class="line">    <span class="keyword">if</span> (!initResult) &#123;</span><br><span class="line">        controller.shutdown();</span><br><span class="line">        System.exit(-<span class="number">3</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    Runtime.getRuntime().addShutdownHook(<span class="keyword">new</span> ShutdownHookThread(log, <span class="keyword">new</span> Callable&lt;Void&gt;() &#123;</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> Void <span class="title">call</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">            controller.shutdown();</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;));</span><br><span class="line">    controller.start();</span><br><span class="line">    <span class="keyword">return</span> controller;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>start 方法首先调用 controller.initialize() 方法初始化 namesrv 的核心控制器（即：NamesrvController）；然后注册钩子方法，在 nameSrv 关闭之前调用 NamesrvController 的 shutdown 方法，释放资源。NamesrvController#initialize 的执行逻辑如下：</p>
+<ul>
+<li><p>加载 kv 配置</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">this</span>.kvConfigManager.load();</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>创建 NettyRemotingServer 实例</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">this</span>.remotingServer = <span class="keyword">new</span> NettyRemotingServer(<span class="keyword">this</span>.nettyServerConfig, <span class="keyword">this</span>.brokerHousekeepingService);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>给 this.remotingExecutor 赋值</p>
+</li>
+<li>注册 DefaultRequestProcessor 处理器<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">this</span>.registerProcessor();</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">registerProcessor</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (namesrvConfig.isClusterTest()) &#123;</span><br><span class="line">        <span class="keyword">this</span>.remotingServer.registerDefaultProcessor(<span class="keyword">new</span> ClusterTestRequestProcessor(<span class="keyword">this</span>, namesrvConfig.getProductEnvName()),</span><br><span class="line">            <span class="keyword">this</span>.remotingExecutor);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">this</span>.remotingServer.registerDefaultProcessor(<span class="keyword">new</span> DefaultRequestProcessor(<span class="keyword">this</span>), <span class="keyword">this</span>.remotingExecutor);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>启动扫描 brokerLiveTable 的定时任务，梅 10s 扫描一次，移除处于不激活状态的 broker。broker 启动的时候会启动心跳线程，定时向 namesrv 发送心跳包，namesrv 收到心跳包以后会更新 brokerLiveTable 中对应 broker 的信息，如果 namesrv 长时间没有收到 broker 的心跳包，则 broker 被判断为不激活状态，需要被移除（最终执行 RouteInfoManager#onChannelDestroy 方法，逻辑见 RouteInfoManager 的 CLOSE 事件）</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">this</span>.scheduledExecutorService.scheduleAtFixedRate(<span class="keyword">new</span> Runnable() &#123;</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            NamesrvController.<span class="keyword">this</span>.routeInfoManager.scanNotActiveBroker();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;, <span class="number">5</span>, <span class="number">10</span>, TimeUnit.SECONDS);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>启动每 10s 打印 KV 配置的定时任务</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">this</span>.scheduledExecutorService.scheduleAtFixedRate(<span class="keyword">new</span> Runnable() &#123;</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            NamesrvController.<span class="keyword">this</span>.kvConfigManager.printAllPeriodically();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;, <span class="number">1</span>, <span class="number">10</span>, TimeUnit.MINUTES);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>tls 模式的处理</p>
+</li>
+</ul>
+<h3 id="2-路由注册"><a href="#2-路由注册" class="headerlink" title="2. 路由注册"></a>2. 路由注册</h3><p>RocketMQ 路由注册通过 Broker 与 nameSrv 的心跳功能实现。Broker 启动时向所有的 namesrv 发送心跳包，每隔 30s 向集群中所有的 nameSrv 定时发送心跳包；namesrv 收到 broker 心跳包以后会更新 brokerLiveTable 缓存中 brokerLiveInfo 的 lastTimestamp，然后 namesrv 每隔 10s 扫描 brokerLiveInfo，如果连续 120s 没有收到心跳包，namesrv 将移除该 broker 的路由信息并关闭 socket 连接</p>
+<ul>
+<li>broker 发送心跳包的代码（broker 端的心跳定时任务，broker 每隔 30s 向集群中所有的 namesrv 发送心跳包）<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">this</span>.scheduledExecutorService.scheduleAtFixedRate(<span class="keyword">new</span> Runnable() &#123;</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                BrokerController.<span class="keyword">this</span>.registerBrokerAll(<span class="keyword">true</span>, <span class="keyword">false</span>, brokerConfig.isForceRegister());</span><br><span class="line">            &#125; <span class="keyword">catch</span> (Throwable e) &#123;</span><br><span class="line">                log.error(<span class="string">"registerBrokerAll Exception"</span>, e);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;, <span class="number">1000</span> * <span class="number">10</span>, Math.max(<span class="number">10000</span>, Math.min(brokerConfig.getRegisterNameServerPeriod(), <span class="number">60000</span>)), TimeUnit.MILLISECONDS);</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>registerBrokerAll 实现<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title">registerBrokerAll</span><span class="params">(<span class="keyword">final</span> <span class="keyword">boolean</span> checkOrderConfig, <span class="keyword">boolean</span> oneway, <span class="keyword">boolean</span> forceRegister)</span> </span>&#123;</span><br><span class="line">    TopicConfigSerializeWrapper topicConfigWrapper = <span class="keyword">this</span>.getTopicConfigManager().buildTopicConfigSerializeWrapper();</span><br><span class="line">    <span class="keyword">if</span> (!PermName.isWriteable(<span class="keyword">this</span>.getBrokerConfig().getBrokerPermission())</span><br><span class="line">        || !PermName.isReadable(<span class="keyword">this</span>.getBrokerConfig().getBrokerPermission())) &#123; <span class="comment">// broker 不可读或不可写</span></span><br><span class="line">        ConcurrentHashMap&lt;String, TopicConfig&gt; topicConfigTable = <span class="keyword">new</span> ConcurrentHashMap&lt;String, TopicConfig&gt;();</span><br><span class="line">        <span class="keyword">for</span> (TopicConfig topicConfig : topicConfigWrapper.getTopicConfigTable().values()) &#123;</span><br><span class="line">            TopicConfig tmp =</span><br><span class="line">                <span class="keyword">new</span> TopicConfig(topicConfig.getTopicName(), topicConfig.getReadQueueNums(), topicConfig.getWriteQueueNums(),</span><br><span class="line">                    <span class="keyword">this</span>.brokerConfig.getBrokerPermission());</span><br><span class="line">            topicConfigTable.put(topicConfig.getTopicName(), tmp);</span><br><span class="line">        &#125;</span><br><span class="line">        topicConfigWrapper.setTopicConfigTable(topicConfigTable);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (forceRegister || needRegister(<span class="keyword">this</span>.brokerConfig.getBrokerClusterName(),</span><br><span class="line">        <span class="keyword">this</span>.getBrokerAddr(),</span><br><span class="line">        <span class="keyword">this</span>.brokerConfig.getBrokerName(),</span><br><span class="line">        <span class="keyword">this</span>.brokerConfig.getBrokerId(),</span><br><span class="line">        <span class="keyword">this</span>.brokerConfig.getRegisterBrokerTimeoutMills())) &#123;</span><br><span class="line">        doRegisterBrokerAll(checkOrderConfig, oneway, topicConfigWrapper);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>流程如下：</p>
+<ul>
+<li>获取 broker 自身的 topic 配置信息 </li>
+<li>调用 BrokerController#needRegister 判断是否需要注册，流程如下：<ul>
+<li>此方法中，broker 会向所有的 namesrv 发送 QUERY_DATA_VERSION 请求（请求体中带上自身的 dataVersion），namesrv 收到 QUERY_DATA_VERSION 请求以后，会查询出 namesrv 缓存中对应 broker 的 dateVersion，并与请求中的 dataVersion 进行对比，并将比对的结果在响应中返回</li>
+<li>只要有任意一个 namesrv 返回的 changed 为 true，则该方法返回 true</li>
+</ul>
+</li>
+<li>forceRegister 或 needRegister 方法返回 true，则执行 BrokerController#doRegisterBrokerAll 方法，注册路由信息，具体流程如下：<ul>
+<li>取出 broker 中存储的所有的 namesrv 的地址，向所有的 namesrv 发送 REGISTER_BROKER 请求（请求中带上该 broker 的 topic 配置信息）</li>
+<li>namesrv 收到 REGISTER_BROKER 请求后的处理流程如下：<ul>
+<li>根据 broker 所在的集群名称尝试获取集群信息，如果不存在则创建新的集群并添加到 clusterAddrTable 当中</li>
+<li>将当前 broker 加入到集群中</li>
+<li>维护 brokerData 信息，根据 brokerName 从 brokerName 获取 brokerData，不存在（即为首次注册）则创建新的 BrokerData 并加入到 brokerAddrTable 当中</li>
+<li>如果 broker 为 master，并且 broker topic 信息发生变化或是初次注册，则需要创建或更新 topic 的路由元数据信息</li>
+<li>更新 brokerLiveTable 信息，brokerLiveTable 是执行路由删除的重要依据</li>
+<li>注册 filterServerTable 地址列表</li>
+<li>slave 节点更新 masterAddr 信息<h3 id="3-路由发现"><a href="#3-路由发现" class="headerlink" title="3. 路由发现"></a>3. 路由发现</h3>RocketMQ 路由发现是非实时的，当 topic 的路由信息发生改变以后并不主动推送给客户端。而是有客户端定时主动拉取，拉取的编码为 GET_ROUTEINTO_BY_TOPIC，路由结果由 TopicRouteData 表示，主要属性如下：</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>name</th>
+<th>类型</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>orderTopicConf</td>
+<td>String</td>
+<td>顺序消息内容配置</td>
+</tr>
+<tr>
+<td>queueDatas</td>
+<td>List<queuedata></queuedata></td>
+<td>topic 队列元数据</td>
+</tr>
+<tr>
+<td>brokerDatas</td>
+<td>List<queuedata></queuedata></td>
+<td>topic 分布的 broker 元数据</td>
+</tr>
+<tr>
+<td>filterServerTable</td>
+<td>HashMap&lt;String/<em> brokerAddr </em>/, List<string>/<em> Filter Server </em>/&gt;</string></td>
+<td>broker 上过滤服务的地址列表</td>
+</tr>
+</tbody>
+</table>
+<p>namesrc 处理路由发现的方法如下：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> RemotingCommand <span class="title">getRouteInfoByTopic</span><span class="params">(ChannelHandlerContext ctx,</span></span></span><br><span class="line"><span class="function"><span class="params">    RemotingCommand request)</span> <span class="keyword">throws</span> RemotingCommandException </span>&#123;</span><br><span class="line">    <span class="keyword">final</span> RemotingCommand response = RemotingCommand.createResponseCommand(<span class="keyword">null</span>);</span><br><span class="line">    <span class="keyword">final</span> GetRouteInfoRequestHeader requestHeader =</span><br><span class="line">        (GetRouteInfoRequestHeader) request.decodeCommandCustomHeader(GetRouteInfoRequestHeader.class);</span><br><span class="line">    TopicRouteData topicRouteData = <span class="keyword">this</span>.namesrvController.getRouteInfoManager().pickupTopicRouteData(requestHeader.getTopic());</span><br><span class="line">    <span class="keyword">if</span> (topicRouteData != <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="keyword">if</span> (<span class="keyword">this</span>.namesrvController.getNamesrvConfig().isOrderMessageEnable()) &#123;</span><br><span class="line">            String orderTopicConf =</span><br><span class="line">                <span class="keyword">this</span>.namesrvController.getKvConfigManager().getKVConfig(NamesrvUtil.NAMESPACE_ORDER_TOPIC_CONFIG,</span><br><span class="line">                    requestHeader.getTopic());</span><br><span class="line">            topicRouteData.setOrderTopicConf(orderTopicConf);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">byte</span>[] content = topicRouteData.encode();</span><br><span class="line">        response.setBody(content);</span><br><span class="line">        response.setCode(ResponseCode.SUCCESS);</span><br><span class="line">        response.setRemark(<span class="keyword">null</span>);</span><br><span class="line">        <span class="keyword">return</span> response;</span><br><span class="line">    &#125;</span><br><span class="line">    response.setCode(ResponseCode.TOPIC_NOT_EXIST);</span><br><span class="line">    response.setRemark(<span class="string">"No topic route info in name server for the topic: "</span> + requestHeader.getTopic()</span><br><span class="line">        + FAQUrl.suggestTodo(FAQUrl.APPLY_TOPIC_URL));</span><br><span class="line">    <span class="keyword">return</span> response;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<ol>
+<li>调用 RouteInfoManager#pickupTopicRouteData 分别从 topicQueueTable、brokerAddrTable、filterServerTable 中取出 topic 相关的信息填充至 TopicRouteData 的 queueDatas、brokerDatas、filterServerTable 属性当中</li>
+<li>如果找到 topic 对应的路由信息且该 topic 为顺序消息，则从 namesrv 的 KVConfig 中取出顺序消息相关的配置填充至路由信息当中</li>
+<li>如果找不到对应 topic 的路由信息，则返回 TOPIC_NOT_EXIST 表示没有路由信息</li>
+</ol>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/中间件/" rel="tag"># 中间件</a>
+          
+            <a href="/tags/消息队列/" rel="tag"># 消息队列</a>
+          
+            <a href="/tags/RocketMQ/" rel="tag"># RocketMQ</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/02/16/dubbo stub (本地存根)/" rel="next" title="Dubbo stub (Dubbo 本地存根)">
+                <i class="fa fa-chevron-left"></i> Dubbo stub (Dubbo 本地存根)
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">柯贤俊</p>
+              <p class="site-description motion-element" itemprop="description">柯贤俊的技术博客</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">3</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">3</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">8</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-启动流程"><span class="nav-number">1.</span> <span class="nav-text">1. 启动流程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-路由注册"><span class="nav-number">2.</span> <span class="nav-text">2. 路由注册</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-路由发现"><span class="nav-number">3.</span> <span class="nav-text">3. 路由发现</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">柯贤俊</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
